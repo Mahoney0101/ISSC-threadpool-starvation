@@ -1,0 +1,115 @@
+version: '3.7'
+
+services:
+  webserver:
+    image: mahoney0101/threadserver:0.0.0.20
+    ports:
+      - "5000:5000"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == worker
+      restart_policy:
+        condition: any
+    networks:
+      - overlay-network
+
+  alertapi:
+    image: mahoney0101/alertapi:0.0.0.6
+    ports:
+      - "5001:5001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == master
+      restart_policy:
+        condition: any
+    networks:
+      - overlay-network
+
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    ports:
+      - "9100:9100"
+    command:
+      - --collector.textfile.directory=/etc/node-exporter/
+      - --collector.processes
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == worker
+    networks:
+      - overlay-network
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+      - "--enable-feature=native-histograms"
+      - "--web.enable-remote-write-receiver"
+      - "--web.enable-admin-api"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == worker
+      restart_policy:
+        condition: any
+    networks:
+      - overlay-network
+    configs:
+      - source: prometheusconfig
+        target: /etc/prometheus/prometheus.yml    
+      - source: prometheusalertrulesconfig
+        target: /etc/prometheus/alert_rules.yml
+
+  pushgateway:
+    image: prom/pushgateway:v1.7.0
+    ports:
+      - "9091:9091"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == worker
+    networks:
+      - overlay-network
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    ports:
+      - "9093:9093"
+    command:
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == worker
+    networks:
+      - overlay-network
+    configs:
+      - source: alertmanagerconfig
+        target: /etc/alertmanager/config.yml  
+
+configs:
+  prometheusconfig:
+    file: ./stack/prometheus/prometheus.yml
+    external: true
+  k6config:
+    file: ./stack/k6/k6.js
+    external: true
+  alertmanagerconfig:
+    file: ./stack/alertmanager/config.yml
+    external: true  
+  prometheusalertrulesconfig:
+    file: ./stack/prometheus/alert_rules.yml
+    external: true
+
+networks:
+  overlay-network:
+    driver: overlay

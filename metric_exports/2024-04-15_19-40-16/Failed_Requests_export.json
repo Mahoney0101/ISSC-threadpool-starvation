@@ -1,0 +1,27 @@
+{
+      "status": "success",
+      "data": {
+            "resultType": "matrix",
+            "result": [
+                  {
+                        "metric": {
+                              "testid": "threadloadtest"
+                        },
+                        "values": [
+                              [
+                                    1713210006,
+                                    "17"
+                              ],
+                              [
+                                    1713210011,
+                                    "17"
+                              ],
+                              [
+                                    1713210016,
+                                    "17"
+                              ]
+                        ]
+                  }
+            ]
+      }
+}

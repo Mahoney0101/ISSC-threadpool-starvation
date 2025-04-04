@@ -1,0 +1,19 @@
+groups:
+- name: ThreadPool Queue Length Alert
+  rules:
+  - alert: ThreadPool Spike
+    expr: system_runtime_threadpool_queue_length > 40
+    labels:
+      severity: critical
+    annotations:
+      summary: "High system_runtime_threadpool_queue_length observed"
+      description: "system_runtime_threadpool_queue_length has reached 40."
+  - alert: ThreadPoolStarvation
+    expr: increase(system_runtime_threadpool_queue_length[5s]) > 20
+    for: 5s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Thread Pool Starvation Detected"
+      description: "The metric has been consistantly higher than 20 for 5 seconds"
+

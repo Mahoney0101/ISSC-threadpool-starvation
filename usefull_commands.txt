@@ -1,0 +1,58 @@
+# Create configs for Prometheus, Alertmanager, and Grafana
+docker config create prometheusconfig ./stack/prometheus/prometheus.yml
+docker config create prometheusalertrulesconfig ./stack/prometheus/alert_rules.yml
+docker config create alertmanagerconfig ./stack/alertmanager/config.yml
+docker config create k6config ./stack/k6/k6.js
+docker config create grafanadatasourceconfig ./stack/grafana/provisioning/datasources/prometheus_ds.yml 
+docker config create grafanadashboardconfig ./stack/grafana/dashboard.yaml 
+docker config create grafanaapdexdashboardconfig ./stack/grafana/provisioning/dashboards/dashboard-apdex.json 
+docker config create grafanatestsdashboardconfig ./stack/grafana/provisioning/dashboards/dashboard-tests.json
+docker config create grafanaresultsdashboardconfig ./stack/grafana/provisioning/dashboards/dashboard-results.json
+docker config create grafanaprocessdashboardconfig ./stack/grafana/provisioning/dashboards/dashboard-process.json
+docker config create grafananodedashboardconfig ./stack/grafana/provisioning/dashboards/dashboard-node.json
+
+# Commands to remove configs if needed
+docker config rm prometheusconfig 
+docker config rm prometheusalertrulesconfig 
+docker config rm alertmanagerconfig
+docker config rm k6config 
+docker config rm grafanadatasourceconfig
+docker config rm grafanadashboardconfig 
+docker config rm grafanaapdexdashboardconfig 
+docker config rm grafanatestsdashboardconfig 
+docker config rm grafanaresultsdashboardconfig 
+docker config rm grafanaprocessdashboardconfig 
+docker config rm grafananodedashboardconfig 
+
+# Add to docker-compose.yml file under the services section for each service that needs the config
+configs:
+  prometheusconfig:
+    file: ./prometheus/prometheus.yml
+    external: true
+  k6config:
+    file: ./k6/k6.js
+    external: true
+  grafanadatasourceconfig:
+    file: ./grafana/provisioning/datasources/prometheus_ds.yml 
+    external: true
+  grafanaapdexdashboardconfig:
+    file: ./grafana/provisioning/dashboards/dashboard-apdex.json
+    external: true
+  grafanatestsdashboardconfig:
+    file: ./grafana/provisioning/dashboards/dashboard-tests.json
+    external: true
+  grafanaresultsdashboardconfig:
+    file: ./grafana/provisioning/dashboards/dashboard-results.json
+    external: true
+  grafanaprocessdashboardconfig:
+    file: ./grafana/provisioning/dashboards/dashboard-process.json
+    external: true
+  alertmanagerconfig:
+    file: ./alertmanager/config.yml
+    external: true  
+  prometheusalertrulesconfig:
+    file: ./prometheus/alert_rules.yml
+    external: true
+
+# Run k6_from_master.js from local machine
+k6 run --env K6_PROMETHEUS_RW_SERVER_URL=http://<DNS_ADDED_TO_ROUTE53>:9090/api/v1/write --env K6_OUT=prometheus-rw --env K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true -o experimental-prometheus-rw --tag testid=threadloadtest ./k6/k6_from_master.js
