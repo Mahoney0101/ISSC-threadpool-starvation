@@ -24,6 +24,9 @@ This repository provides the source code used during the implementation phase of
   - [Metrics Export](#metrics-export)
   - [Automation](#automation)
   - [Figure Generation](#figure-generation)
+  - [IAC](#iac)
+    - [Prerequisites](#prerequisites)
+    - [Steps](#steps)
 
 # Implementation
 
@@ -84,7 +87,7 @@ sudo ufw status
 
 ### Worker Node Setup (AWS EC2)
 
-- Deploy an AWS EC2 instance using Ubuntu 22.04 (AMI: ubuntu-jammy-22.04-amd64-server-20240207.1).
+- Deploy an AWS EC2 instance using Ubuntu 22.04 (AMI: ubuntu-jammy-22.04-amd64-server-20240207.1  ID: ami-0d940f23d527c3ab1).
 - Configure security group rules to allow inbound traffic:
 
 | Service      | Port  |
@@ -221,3 +224,28 @@ There are scripts to generate figures in the figures/figure_generation directory
 <img src="./figures/issc_figures/Stacked_Figures.png" alt="Metric figures" width="50%" />
 
 <img src="./figures/issc_figures/Thread_Response_CPU.png" alt="TPQL ResponseTimes CPU" width="50%" />
+
+
+
+## IAC
+
+To simplify worker node creation, the provided Terraform code in ./terraform/main.tf will automate the provisioning and configuration of worker EC2 instance, including automatic registration with the Docker Swarm cluster, and ssh key generation and registration.
+
+### Prerequisites
+
+- terraform installed
+- aws cli installed
+
+### Steps
+
+- Ensure port forwarding [is setup](#configure-port-forwarding)
+- Configure awscli profile by running `aws configure --profile issc`
+- Run `docker swarm init  --listen-addr <private_ip>:2377 --advertise-addr <public_ip>` this will output a join token
+- Add the join token and the public_ip to ssm by running the following
+  - aws ssm put-parameter --name "swarm-join-token" --value "join_token" --type "String" --profile issc --overwrite
+  - aws ssm put-parameter --name "master_ip" --value "<public_ip>" --type "String" --profile issc --overwrite
+
+- Navigate to ./terraform and run the following
+  - `terraform apply` confirm all is as expected and approve
+  
+Worker node should be running and part of the swarm run `docker node ls` to verify connectivity
