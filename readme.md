@@ -242,7 +242,7 @@ To simplify worker node creation, the provided Terraform code in ./terraform/mai
 - Configure awscli profile by running `aws configure --profile issc`
 - Run `docker swarm init  --listen-addr <private_ip>:2377 --advertise-addr <public_ip>` this will output a join token
 - Add the join token and the public_ip to ssm by running the following
-  - aws ssm put-parameter --name "swarm-join-token" --value "join_token" --type "String" --profile issc --overwrite
+  - aws ssm put-parameter --name "swarm-join-token" --value "<join_token>" --type "String" --profile issc --overwrite
   - aws ssm put-parameter --name "master_ip" --value "<public_ip>" --type "String" --profile issc --overwrite
 
 - Navigate to ./terraform and run the following
