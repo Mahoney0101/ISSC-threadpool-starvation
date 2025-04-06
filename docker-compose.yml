@@ -100,9 +100,6 @@ configs:
   prometheusconfig:
     file: ./stack/prometheus/prometheus.yml
     external: true
-  k6config:
-    file: ./stack/k6/k6.js
-    external: true
   alertmanagerconfig:
     file: ./stack/alertmanager/config.yml
     external: true  
