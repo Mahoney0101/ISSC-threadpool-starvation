@@ -241,4 +241,4 @@ To simplify worker node creation, the provided Terraform code in ./terraform/mai
 - Navigate to ./terraform and run the following
   - `terraform apply` confirm all is as expected and approve
   
-Worker node should be running and part of the swarm run `docker node ls` to verify connectivity
+Worker node should be running and part of the swarm, run `docker node ls` to verify connectivity
