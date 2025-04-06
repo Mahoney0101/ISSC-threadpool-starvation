@@ -179,13 +179,6 @@ docker node update --label-add role=master <node ID>
 docker config create prometheusconfig ./prometheus/prometheus.yml
 docker config create prometheusalertrulesconfig ./prometheus/alert rules.yml
 docker config create alertmanagerconfig ./alertmanager/config.yml
-docker config create grafanadatasourceconfig ./grafana/provisioning/datasources/prometheus ds.yml
-docker config create grafanadashboardconfig ./grafana/dashboard.yaml
-docker config create grafanaapdexdashboardconfig ./grafana/provisioning/dashboards/dashboard-apdex.json
-docker config create grafanatestsdashboardconfig ./grafana/. . . /dashboard-tests.json
-docker config create grafanaresultsdashboardconfig ./grafana/. . . /dashboard-results.json
-docker config create grafanaprocessdashboardconfig ./grafana/. . . /dashboard-process.json
-docker config create grafananodedashboardconfig ./grafana/. . . /dashboard-node.json
 ```
 
 - Deploy stack:
