@@ -22,7 +22,7 @@ export let options = {
 };
 
 export function ramp_up() {
-    let responses = http.get('http://localhost:5000/test-threadpool');
+    let responses = http.get('http://<worker_node_address>:5000/test-threadpool');
     check(responses, {
         'Request to /test-threadpool succeeded': (res) => res.status === 200
     });
